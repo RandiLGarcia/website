@@ -1,0 +1,1 @@
+rsync -avz --delete ~/Dropbox/Smith-Research/website/ rgarcia@www.science.smith.edu:public_html/
