@@ -131,7 +131,6 @@ kashy_ppp &lt;- read.csv(file.choose(), header=TRUE)
 
 kashy_ppp &lt;- kashy_ppp %&gt;%
   mutate(slope_m = man*(time), slope_w = woman*(time), obsid = Day+14*(dyadid-1))</code></pre>
-<p>```</p>
 <div id="longitudnal-apim" class="section level1">
 <h1>Longitudnal APIM</h1>
 <pre class="r"><code>APIM_long  &lt;- lme(satisf_A ~ genderE + conflict_A + conflict_P
