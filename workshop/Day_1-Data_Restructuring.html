@@ -122,11 +122,12 @@ $(document).ready(function () {
 
 <p><a href="schedule.html">Back to schedule</a></p>
 <hr />
-<p>Importing the Acitelli dataset into R.</p>
+<div id="importing-the-acitelli-dataset-into-r." class="section level1">
+<h1>Importing the Acitelli dataset into R.</h1>
 <pre class="r"><code>acitelli_ind &lt;- read.csv(file.choose(), header=TRUE)
 
 #Note that you can also specify the file path.
-#acitelli_ind &lt;- read.csv(file = &quot;C:/Users/Randi/Dropbox/Two-day Dyads (UCSF)/Workshop Materials/Data/acitelli individual.csv&quot;, header=TRUE)
+#acitelli_ind &lt;- read.csv(&quot;C:/Desktop/Workshop Materials/Data/acitelli individual.csv&quot;, header=TRUE)
 
 head(acitelli_ind)</code></pre>
 <pre><code>##   cuplid  Yearsmar gender self_pos other_pos satisfaction tension simhob
@@ -136,22 +137,16 @@ head(acitelli_ind)</code></pre>
 ## 4     10 10.452667      1      4.2       4.0     3.666667     2.0      0
 ## 5     11 -8.297333     -1      5.0       4.4     3.833333     2.5      0
 ## 6     11 -8.297333      1      4.2       4.8     3.833333     2.5      0</code></pre>
-<pre class="r"><code>#View(acitelli_ind)</code></pre>
+<pre class="r"><code>#use this function call if you want to look at ALL of the data, or simply click on the data in your R environment
+#View(acitelli_ind) </code></pre>
 <p>We ultimately want to get our data into the pairwise format for the APIM. We’ll need some more packages.</p>
 <pre class="r"><code>#install.packages(&quot;tidyr&quot;)
 #install.packages(&quot;dplyr&quot;)
 
 library(tidyr)
 library(dplyr)</code></pre>
-<pre><code>## 
-## Attaching package: 'dplyr'</code></pre>
-<pre><code>## The following objects are masked from 'package:stats':
-## 
-##     filter, lag</code></pre>
-<pre><code>## The following objects are masked from 'package:base':
-## 
-##     intersect, setdiff, setequal, union</code></pre>
-<p>Individual to Dyad struture</p>
+<div id="individual-to-dyad-structure" class="section level2">
+<h2>Individual to Dyad Structure</h2>
 <pre class="r"><code>acitelli_dyd &lt;- acitelli_ind %&gt;% 
   mutate(gender = ifelse(gender == 1, &quot;H&quot;, &quot;W&quot;)) %&gt;%
   gather(variable, value, self_pos:simhob) %&gt;%
@@ -173,7 +168,9 @@ head(acitelli_dyd)</code></pre>
 ## 4        4.0        4.0        0       -1       2.0       3.0
 ## 5        4.4        4.2        0        0       2.5       3.5
 ## 6        4.4        4.0        0       -1       2.5       2.0</code></pre>
-<p>Individual to Pairwise struture</p>
+</div>
+<div id="individual-to-pairwise-structure" class="section level2">
+<h2>Individual to Pairwise Structure</h2>
 <pre class="r"><code>tempA &lt;- acitelli_ind %&gt;% 
   mutate(genderE = gender, partnum = 1) %&gt;%
   mutate(gender = ifelse(gender == 1, &quot;A&quot;, &quot;P&quot;)) %&gt;%
@@ -215,7 +212,13 @@ head(acitelli_pair)</code></pre>
 ## 5       2.5       2.5
 ## 6       2.5       2.5</code></pre>
 <hr />
+</div>
+</div>
+<div id="daves-kennys-handy-dandy-restructuring-apps" class="section level1">
+<h1><a href="http://davidakenny.net/RDDD.htm">Dave’s Kenny’s handy dandy restructuring apps</a></h1>
+<hr />
 <p><a href="schedule.html">Back to schedule</a></p>
+</div>
 
 
 
