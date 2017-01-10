@@ -139,8 +139,8 @@ acitelli_ind &lt;- read.csv(file.choose(), header=TRUE)</code></pre>
 <p>Learn more about structural equation modeling with `lavaan’ <a href="http://lavaan.ugent.be/tutorial/index.html">here</a>.</p>
 <pre class="r"><code>cfm.model &lt;- '
       # measurement model
-        satisfaction  =~ satisfaction_H + satisfaction_W 
-        tension =~ tension_H + tension_W
+        satisfaction  =~ satisfaction_H + 1*satisfaction_W 
+        tension =~ tension_H + 1*tension_W
 
       # structural model
         satisfaction ~ tension
@@ -153,39 +153,45 @@ acitelli_ind &lt;- read.csv(file.choose(), header=TRUE)</code></pre>
 cfm &lt;- sem(cfm.model, data = acitelli_dyd)
 
 summary(cfm, fit.measures = TRUE)</code></pre>
-<pre><code>## lavaan (0.5-22) converged normally after  28 iterations
+<pre><code>## lavaan (0.5-22) converged normally after  27 iterations
 ## 
 ##   Number of observations                           148
 ## 
 ##   Estimator                                         ML
-##   Minimum Function Test Statistic                   NA
-##   Degrees of freedom                                -1
-##   Minimum Function Value               0.0000000000000
+##   Minimum Function Test Statistic                0.181
+##   Degrees of freedom                                 1
+##   P-value (Chi-square)                           0.671
+## 
+## Model test baseline model:
+## 
+##   Minimum Function Test Statistic              207.095
+##   Degrees of freedom                                 6
+##   P-value                                        0.000
 ## 
 ## User model versus baseline model:
 ## 
-##   Comparative Fit Index (CFI)                       NA
-##   Tucker-Lewis Index (TLI)                          NA
+##   Comparative Fit Index (CFI)                    1.000
+##   Tucker-Lewis Index (TLI)                       1.024
 ## 
 ## Loglikelihood and Information Criteria:
 ## 
-##   Loglikelihood user model (H0)               -412.620
+##   Loglikelihood user model (H0)               -412.710
 ##   Loglikelihood unrestricted model (H1)       -412.620
 ## 
-##   Number of free parameters                         11
-##   Akaike (AIC)                                 847.240
-##   Bayesian (BIC)                               880.210
-##   Sample-size adjusted Bayesian (BIC)          845.399
+##   Number of free parameters                          9
+##   Akaike (AIC)                                 843.421
+##   Bayesian (BIC)                               870.396
+##   Sample-size adjusted Bayesian (BIC)          841.914
 ## 
 ## Root Mean Square Error of Approximation:
 ## 
-##   RMSEA                                             NA
-##   90 Percent Confidence Interval             NA     NA
-##   P-value RMSEA &lt;= 0.05                             NA
+##   RMSEA                                          0.000
+##   90 Percent Confidence Interval          0.000  0.164
+##   P-value RMSEA &lt;= 0.05                          0.723
 ## 
 ## Standardized Root Mean Square Residual:
 ## 
-##   SRMR                                           0.000
+##   SRMR                                           0.011
 ## 
 ## Parameter Estimates:
 ## 
@@ -196,31 +202,31 @@ summary(cfm, fit.measures = TRUE)</code></pre>
 ##                    Estimate  Std.Err  z-value  P(&gt;|z|)
 ##   satisfaction =~                                     
 ##     satisfaction_H    1.000                           
-##     satisfaction_W    0.637       NA                  
+##     satisfaction_W    1.000                           
 ##   tension =~                                          
 ##     tension_H         1.000                           
-##     tension_W         0.699       NA                  
+##     tension_W         1.000                           
 ## 
 ## Regressions:
 ##                    Estimate  Std.Err  z-value  P(&gt;|z|)
 ##   satisfaction ~                                      
-##     tension          -0.937       NA                  
+##     tension          -0.894    0.150   -5.974    0.000
 ## 
 ## Covariances:
 ##                     Estimate  Std.Err  z-value  P(&gt;|z|)
 ##  .satisfaction_H ~~                                    
-##    .tension_H          0.040       NA                  
+##    .tension_H         -0.032    0.021   -1.499    0.134
 ##  .satisfaction_W ~~                                    
-##    .tension_W         -0.140       NA                  
+##    .tension_W         -0.089    0.025   -3.527    0.000
 ## 
 ## Variances:
 ##                    Estimate  Std.Err  z-value  P(&gt;|z|)
-##    .satisfaction_H   -0.026       NA                  
-##    .satisfaction_W    0.182       NA                  
-##    .tension_H         0.201       NA                  
-##    .tension_W         0.390       NA                  
-##    .satisfaction      0.040       NA                  
-##     tension           0.225       NA</code></pre>
+##    .satisfaction_H    0.060    0.017    3.501    0.000
+##    .satisfaction_W    0.128    0.022    5.969    0.000
+##    .tension_H         0.274    0.046    5.914    0.000
+##    .tension_W         0.335    0.050    6.744    0.000
+##    .satisfaction      0.025    0.021    1.200    0.230
+##     tension           0.158    0.040    3.956    0.000</code></pre>
 <hr />
 <p><a href="schedule.html">Back to schedule</a></p>
 <hr />
