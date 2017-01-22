@@ -1,0 +1,132 @@
+\documentclass[10pt]{article}
+
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{fancyhdr,url,hyperref}
+\usepackage{graphicx}
+
+\oddsidemargin 0in  %0.5in
+\topmargin     0in
+\leftmargin    0in
+\rightmargin   0in
+\textheight    9in
+\textwidth     6in %6in
+%\headheight    0in
+%\headsep       0in
+%\footskip      0.5in
+
+
+\pagestyle{fancy}
+
+\lhead{\textsc{Prof. Baumer}}
+\chead{\textsc{MTH 220: Lecture Notes}}
+\rhead{\textsc{September 28th, 2016}}
+\lfoot{}
+\cfoot{}
+%\cfoot{\thepage}
+\rfoot{}
+\renewcommand{\headrulewidth}{0.2pt}
+\renewcommand{\footrulewidth}{0.0pt}
+
+\newcommand{\ans}{\vspace{1in}}
+
+\begin{document}
+%\maketitle
+
+\paragraph{Agenda}
+\begin{enumerate}
+  \itemsep0em 
+  \item Multiple regression with two quantitative variables
+\end{enumerate}
+
+\paragraph{Warmup: Italian Restaurants (cont'd)}
+
+<<echo=FALSE>>=
+opts_chunk$set(tidy=TRUE, size='footnotesize')
+@
+
+Recall the Italian Restaurants from last time. Let's build a model now for the $Price$ as a function of the $Food$ rating and the location relative to 5th Avenue. 
+
+<<message=FALSE,fig.height=5, fig.show='hide'>>=
+require(mosaic)
+NYC <- read.csv("http://www.math.smith.edu/~bbaumer/mth241/nyc.csv")
+qplot(data = NYC, x = jitter(Food), y = Price) +
+  geom_smooth(method = "lm", se = 0)
+mod.fe <- lm(Price ~ Food + East, data = NYC)
+mod.fe
+@
+
+\paragraph{In-Class Activity}
+
+\begin{enumerate}
+  \itemsep0.7in
+  \item Interpret the coefficients of this model. What is the value of being on the East Side of Fifth Avenue?
+  \item Calculate the expected $Price$ of a restaurant in the East Village with a $Food$ rating of 23. 
+  \item Use \texttt{plotModel()} to visualize your model in the data space. 
+  
+  <<eval=FALSE>>=
+plotModel(mod.fe, xlab = "Jittered food rating", ylab = "Average Price (US$)", system = "ggplot2")
+@
+  
+\end{enumerate}
+
+
+\paragraph{Multiple Regression with a Second Quantitative Variable}
+If $X_2$ is a quantitative variable, then we have
+
+  $$
+    \hat{Y} = \hat{\beta}_0 + \hat{\beta}_1 \cdot X_1 + \hat{\beta}_2 \cdot X_2
+  $$
+Notice that our model is no longer a line, rather it is a \emph{plane} that lives in three dimensions!
+
+\paragraph{Example: Italian Restaurants (continued)}
+
+Now suppose that we want to improve our model by considering not only the quality of the $Food$, but also the quality of the $Service$. We can do this in {\tt R} by simply adding another variable to our regression model.
+
+<<message=FALSE,fig.height=3, eval=TRUE>>=
+mod.fs <- lm(Price ~ Food + Service, data = NYC)
+coef(mod.fs)
+@
+
+<<tidy=TRUE, eval=FALSE>>=
+fit.price <- makeFun(mod.fs)
+plotFun(fit.price(f,s) ~ f & s, surface=TRUE, f.lim=c(0,30), s.lim=c(0,30), alpha=0.5)
+@
+
+<<tidy=TRUE, eval=FALSE>>=
+require(rgl)
+opacity <- 0.4
+with(NYC, plot3d(x = Food, y = Service, z = Price, type = "s", size = 0.3,
+    col = "blue", xlab = "Food Rating", ylab = "Service Rating",
+    zlab = "Price ($)"))
+coefs <- coef(mod.fs)
+planes3d(coefs["Food"], coefs["Service"], -1, coefs["(Intercept)"], alpha = opacity,
+col = "lightgray")
+@
+
+\begin{enumerate}
+  \itemsep0.7in
+  \item Interpret the coefficients of this model. What does the coefficient of $Food$ mean in the real-world context of the problem? $Service$?
+  \item How important is $Service$ relative to $Food$? Is it fair to compare the two coefficients?
+  \item Use {\tt makeFun()} to find the expected $Price$ of a restaurant with a $Food$ rating of 21 but a $Service$ rating of 28. 
+  \item Calculate the residual for \href{http://www.zagat.com/r/san-pietro-new-york}{San Pietro}. Is it overpriced? 
+  <<>>=
+filter(NYC, Restaurant == "San Pietro")
+@
+
+
+  \item What if we added all three explanatory variables to the model? What geometric shape would we have then? 
+
+
+<<tidy=TRUE, eval=FALSE>>=
+with(NYC, plot3d(x = Food, y = Service, z = Price, type = "s", size = 0.8,
+    col = "blue", xlab = "Food Rating", ylab = "Service Rating",
+    zlab = "Price ($)"))
+coefs <- coef(lm(Price ~ Food + Service + East, data=NYC))
+planes3d(coefs["Food"], coefs["Service"], -1, coefs["(Intercept)"], alpha = opacity, col = "lightgray")
+planes3d(coefs["Food"], coefs["Service"], -1, coefs["(Intercept)"] + coefs["East"], alpha = opacity, col = "lightgray")
+@
+
+
+\end{enumerate}
+
+\end{document}

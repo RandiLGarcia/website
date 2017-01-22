@@ -1,0 +1,163 @@
+\documentclass[10pt]{article}
+
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{fancyhdr,url,hyperref}
+\usepackage{graphicx,xspace}
+\usepackage{subfigure}
+\usepackage{tikz}
+\usetikzlibrary{arrows,decorations.pathmorphing,backgrounds,positioning,fit,through}
+
+\oddsidemargin 0in  %0.5in
+\topmargin     0in
+\leftmargin    0in
+\rightmargin   0in
+\textheight    9in
+\textwidth     6in %6in
+%\headheight    0in
+%\headsep       0in
+%\footskip      0.5in
+
+\newtheorem{thm}{Theorem}
+\newtheorem{cor}[thm]{Corollary}
+\newtheorem{obs}{Observation}
+\newtheorem{lemma}{Lemma}
+\newtheorem{claim}{Claim}
+\newtheorem{definition}{Definition}
+\newtheorem{question}{Question}
+\newtheorem{answer}{Answer}
+\newtheorem{problem}{Problem}
+\newtheorem{solution}{Solution}
+\newtheorem{conjecture}{Conjecture}
+
+\pagestyle{fancy}
+
+\lhead{\textsc{Prof. Baumer}}
+\chead{\textsc{MTH 220: Lecture notes}}
+\lfoot{}
+\cfoot{}
+%\cfoot{\thepage}
+\rfoot{}
+\renewcommand{\headrulewidth}{0.2pt}
+\renewcommand{\footrulewidth}{0.0pt}
+
+\newcommand{\ans}{\vspace{0.25in}}
+\newcommand{\R}{{\sf R}\xspace}
+\newcommand{\cmd}[1]{\texttt{#1}}
+
+\rhead{\textsc{September 16, 2016}}
+
+\begin{document}
+
+\paragraph{Agenda}
+\begin{enumerate}
+  \itemsep0em
+  \item Center, Shape, and Spread
+\end{enumerate}
+
+\paragraph{Warmup: Lurking Variables}
+
+For each of the following pairs of variables, a statistically signficant positive relationship has been observed. Identify a potential lurking variable that might cause the spurious correlation.
+\begin{enumerate}
+  \itemsep0.5in
+  \item The amount of ice cream sold in New England and the number of deaths by drowning
+  \item The salary of U.S. ministers and the price of vodka
+  \item The number of doctors in a region and the number of crimes committed in that region
+  \item The number of storks sighted and the population of Oldenburg, Germany, over a six-year period
+  \item The amount of coffee consumed and the prevalence of lung cancer
+\end{enumerate}
+
+\paragraph{Thinking about Distributions}
+Shape, Center, and Spread
+\begin{itemize}
+  \item Graphical techniques for summarizing the \emph{shape} of the distribution of one variable:
+  \begin{itemize}
+%    \item Stem (and leaf) plot [in R, {\tt stem()}]
+    \item Histogram [\cmd{geom\_histogram()}]
+    \item Density plot [\cmd{geom\_density()}]
+    \item Box (and whisker) plot [\cmd{geom\_boxplot()}]
+  \end{itemize}
+  \item Numerical Techniques for summarizing the \emph{center} and \emph{spread} of the distribution of one variable:
+  \begin{itemize}
+    \item Center: mean [{\tt mean()}], median [{\tt median()}]
+    \item Spread: standard deviation [{\tt sd()}], variance [{\tt var()}], range [{\tt range()}], IQR [{\tt IQR()}]
+  \end{itemize}
+\end{itemize}
+
+\paragraph{Thought Experiment}
+Consider the following two variables:
+\begin{itemize}
+  \item The {\tt height} of all adults in the United States
+  \item The annual {\tt income} of all working adults in the United States
+\end{itemize}
+
+Think about the distribution of each variable, and discuss the following questions with a neighbor.
+\begin{enumerate}
+  \itemsep0.3in
+  \item Sketch a density plot for the distribution. What features does it have? Is it symmetric? Is it normal? It is unimodal?
+  \item Label the axes on your density plot. What is the range of each variable? 
+  \item How would you summarize each distribution numerically? Which measures are most appropriate?
+  \item Suppose that the government issued a tax rebate in the amount of \$2000 to each American taxpayer. How would the distribution of \cmd{income} change? What would happen to your measures of center and spread? 
+  \ans
+\end{enumerate}
+
+\paragraph{College Tuition}
+% [Exercise 1.61 (page 49)] 
+The data set shows the tuitions and fees charged by the 56 four-year colleges in Massachusetts in the late 1990's. 
+<<message=FALSE>>=
+require(mosaic)
+Tuition <- read.csv("http://www.math.smith.edu/ips6eR/ch01/ex01_061.csv")
+favstats(~ tuition, data = Tuition)
+@
+
+A box plot, histogram, and density plot reveal different features of the distribution. 
+
+<<fig.width=10, fig.height=4>>=
+gridExtra::grid.arrange(
+  qplot(data = Tuition, y = tuition, geom = "boxplot", x = 1) + coord_flip(),
+  qplot(data = Tuition, x = tuition, geom = "histogram", binwidth = 2000),
+  qplot(data = Tuition, x = tuition, geom = "density", adjust = 0.6)
+)
+@
+
+\begin{enumerate}
+  \item What information can you glean from the histogram or density plot that is not revealed by the numerical table or the box plot?
+  \ans
+  \item What do you know about college tuition that might explain the features of this distribution?
+  \ans
+\end{enumerate}
+
+
+% \newpage
+% %'
+% \subsection*{Instructor's Notes}
+% %'
+% \url{http://en.wikipedia.org/wiki/Household_income_in_the_United_States#Household_income}
+% %'
+<<include=FALSE>>=
+url <- "http://en.wikipedia.org/wiki/Household_income_in_the_United_States"
+require(rvest)
+require(readr)
+wiki <- html(url) %>%
+  html_nodes("table.wikitable") %>%
+  html_table(fill=TRUE) %>%
+  tail(1)
+IncDist <- wiki[[1]] %>%
+  tail(-1) %>%
+  mutate(numHouseholds = readr::parse_number(`Number (thousands) [47]`)) %>%
+  mutate(income = c(seq(from = 2500, to = 197500, by = 5000), 225000, 500000))
+
+ggplot(data = IncDist, aes(x = income, y = numHouseholds)) +
+  geom_bar(stat = "identity") + 
+  scale_x_continuous(labels = scales::dollar) + 
+  ylab("Number of US households") + xlab("Household Income")
+
+# mean income
+IncDist %>%
+  mutate(contrib = numHouseholds * income) %>%
+  summarise(N = n(), wmean = sum(contrib) / sum(numHouseholds))
+# median
+filter(IncDist, abs(parse_number(Percentile) - 50) < 5)
+@
+
+
+\end{document}
