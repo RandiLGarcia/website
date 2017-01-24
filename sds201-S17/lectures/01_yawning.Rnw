@@ -44,7 +44,6 @@
 \rhead{\textsc{January 27th, 2017}}
 
 \begin{document}
-\SweaveOpts{concordance=TRUE}
 
 \paragraph{Agenda}
 \begin{enumerate}

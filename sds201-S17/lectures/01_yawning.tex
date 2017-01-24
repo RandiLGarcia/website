@@ -1,4 +1,54 @@
-\documentclass[10pt]{article}
+\documentclass[10pt]{article}\usepackage[]{graphicx}\usepackage[]{color}
+%% maxwidth is the original width if it is less than linewidth
+%% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
+\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
+\let\hlipl\hlkwb
+
+\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \\@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+
+\usepackage{alltt}
 
 \usepackage{amsmath,amssymb,amsthm}
 \usepackage{fancyhdr,url,hyperref}
@@ -42,10 +92,8 @@
 \newcommand{\cmd}[1]{\texttt{#1}}
 
 \rhead{\textsc{January 27th, 2017}}
-
-\usepackage{Sweave}
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
 \begin{document}
-\input{01_yawning-concordance}
 
 \paragraph{Agenda}
 \begin{enumerate}
@@ -70,21 +118,33 @@ There is even psychological literature on the subject:
 An experiment conducted by \href{http://www.discovery.com/tv-shows/mythbusters/videos/is-yawning-contagious-minimyth/}{MythBusters} tested if a person can be subconsciously influenced into yawning if another person near them yawns. 
 In this study 50 people were randomly assigned to two groups: 34 to a group where a person near them yawned (seeded) and 16 to a control group where there wasn't a yawn seed. The results are as follows:
 
-\begin{Schunk}
-\begin{Sinput}
-> seeded <- c(rep(0, 12), rep(1, 24), rep(0, 4), rep(1, 10))
-> yawned <- c(rep(0, 36), rep(1, 14))
-> Yawners <- data.frame(seeded, yawned)
-> library(mosaic)
-> tally(yawned ~ seeded, data = Yawners)
-\end{Sinput}
-\begin{Soutput}
-      seeded
-yawned  0  1
-     0 12 24
-     1  4 10
-\end{Soutput}
-\end{Schunk}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlstd{seeded} \hlkwb{<-} \hlkwd{c}\hlstd{(}\hlkwd{rep}\hlstd{(}\hlnum{0}\hlstd{,} \hlnum{12}\hlstd{),} \hlkwd{rep}\hlstd{(}\hlnum{1}\hlstd{,} \hlnum{24}\hlstd{),} \hlkwd{rep}\hlstd{(}\hlnum{0}\hlstd{,} \hlnum{4}\hlstd{),} \hlkwd{rep}\hlstd{(}\hlnum{1}\hlstd{,} \hlnum{10}\hlstd{))}
+\hlstd{yawned} \hlkwb{<-} \hlkwd{c}\hlstd{(}\hlkwd{rep}\hlstd{(}\hlnum{0}\hlstd{,} \hlnum{36}\hlstd{),} \hlkwd{rep}\hlstd{(}\hlnum{1}\hlstd{,} \hlnum{14}\hlstd{))}
+\hlstd{Yawners} \hlkwb{<-} \hlkwd{data.frame}\hlstd{(seeded, yawned)}
+\hlkwd{library}\hlstd{(mosaic)}
+\end{alltt}
+
+
+{\ttfamily\noindent\color{warningcolor}{\#\# Warning: package 'mosaic' was built under R version 3.2.5}}
+
+{\ttfamily\noindent\color{warningcolor}{\#\# Warning: package 'dplyr' was built under R version 3.2.5}}
+
+{\ttfamily\noindent\color{warningcolor}{\#\# Warning: package 'ggplot2' was built under R version 3.2.5}}
+
+{\ttfamily\noindent\color{warningcolor}{\#\# Warning: package 'mosaicData' was built under R version 3.2.5}}\begin{alltt}
+\hlkwd{tally}\hlstd{(yawned} \hlopt{~} \hlstd{seeded,} \hlkwc{data} \hlstd{= Yawners)}
+\end{alltt}
+\begin{verbatim}
+##       seeded
+## yawned  0  1
+##      0 12 24
+##      1  4 10
+\end{verbatim}
+\end{kframe}
+\end{knitrout}
 
 
 Big idea: It was observed that a larger percentage of those who were seeded with a yawn, actually yawned. But how sure are we that that observed difference is meaningful? Can we conclude that there is truly an association between these two variables?  
@@ -147,14 +207,16 @@ Big idea: It was observed that a larger percentage of those who were seeded with
 Connect to the URL \url{http://rstudio.smith.edu:8787} and enter your Smith account info.
 
 
-\begin{Schunk}
-\begin{Sinput}
-> tally(yawned ~ seeded, data = Yawners)
-> tally(yawned ~ seeded, data = Yawners)[2,2]    # grab the cell we care about
-> tally(yawned ~ shuffle(seeded), data = Yawners)  # shuffle the table
-> perms <- do(1000) * tally(yawned ~ shuffle(seeded), data = Yawners)[2,2]
-> histogram(~result, data = perms)
-\end{Sinput}
-\end{Schunk}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
+\begin{alltt}
+\hlkwd{tally}\hlstd{(yawned} \hlopt{~} \hlstd{seeded,} \hlkwc{data} \hlstd{= Yawners)}
+\hlkwd{tally}\hlstd{(yawned} \hlopt{~} \hlstd{seeded,} \hlkwc{data} \hlstd{= Yawners)[}\hlnum{2}\hlstd{,}\hlnum{2}\hlstd{]}    \hlcom{# grab the cell we care about}
+\hlkwd{tally}\hlstd{(yawned} \hlopt{~} \hlkwd{shuffle}\hlstd{(seeded),} \hlkwc{data} \hlstd{= Yawners)}  \hlcom{# shuffle the table}
+\hlstd{perms} \hlkwb{<-} \hlkwd{do}\hlstd{(}\hlnum{1000}\hlstd{)} \hlopt{*} \hlkwd{tally}\hlstd{(yawned} \hlopt{~} \hlkwd{shuffle}\hlstd{(seeded),} \hlkwc{data} \hlstd{= Yawners)[}\hlnum{2}\hlstd{,}\hlnum{2}\hlstd{]}
+\hlkwd{histogram}\hlstd{(}\hlopt{~}\hlstd{result,} \hlkwc{data} \hlstd{= perms)}
+\end{alltt}
+\end{kframe}
+\end{knitrout}
 
 \end{document}

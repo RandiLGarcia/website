@@ -46,8 +46,9 @@
 
 \rhead{\textsc{February 1st, 2017}}
 
+\usepackage{Sweave}
 \begin{document}
-\SweaveOpts{concordance=TRUE}
+\input{03_experimental-design-concordance}
 
 \paragraph{Agenda}
 \begin{enumerate}
@@ -72,66 +73,95 @@
 
   Recall the stratifield sampling exercise from last time, and suppose that hourly wages were normally distributed with means \$25, \$15, \$22, and \$15, among the 90 women working full-time, 18 women working part-time, 9 men working full-time, and 63 men working part-time, respectively. The following \R code builds a data frame that represents one possible reality. 
 
-<<>>=
-staff <- c(rep("women-ft", 90), rep("women-pt", 18), rep("men-ft", 9), rep("men-pt", 63))
-wage <- c(rnorm(90, mean = 25), rnorm(18, 15), rnorm(9, 22), rnorm(63, 15))
-ds <- data.frame(staff, wage)
-head(ds)
-nrow(ds)
-@
+\begin{Schunk}
+\begin{Sinput}
+> staff <- c(rep("women-ft", 90), rep("women-pt", 18), rep("men-ft", 9), rep("men-pt", 63))
+> wage <- c(rnorm(90, mean = 25), rnorm(18, 15), rnorm(9, 22), rnorm(63, 15))
+> ds <- data.frame(staff, wage)
+> head(ds)
+\end{Sinput}
+\begin{Soutput}
+     staff     wage
+1 women-ft 24.33976
+2 women-ft 25.54253
+3 women-ft 25.84506
+4 women-ft 25.55078
+5 women-ft 26.33530
+6 women-ft 24.91258
+\end{Soutput}
+\begin{Sinput}
+> nrow(ds)
+\end{Sinput}
+\begin{Soutput}
+[1] 180
+\end{Soutput}
+\end{Schunk}
 
   Note that wages are similar \emph{within} the four groups, but dissimilar \emph{among} the groups. This command will draw separate densities for the four groups on the same plot. 
 
-<<message=FALSE, fig.width=10, fig.height=5, fig.align='center'>>=
-require(mosaic)
-qplot(data = ds, x = wage, color = staff, geom = "density")
-@
+\begin{Schunk}
+\begin{Sinput}
+> require(mosaic)
+> qplot(data = ds, x = wage, color = staff, geom = "density")
+\end{Sinput}
+\end{Schunk}
 
   We want to estimate the mean wage among all 180 workers. In this case, since we know the wage of all of the workers, we can just compute it. 
   
   <<>>=
 mean(~wage, data = ds)
-@
   
  But recall that for the purposes of this exercise, we don't actually know all 180 wages, and we are asked to sample 40 of them. We can take a \emph{simple random sample} and compute the mean wage within that sample.
 
-<<>>=
-# simple random sampling
-mean(~wage, data = sample(ds, 40))
-@
+\begin{Schunk}
+\begin{Sinput}
+> # simple random sampling
+> mean(~wage, data = sample(ds, 40))
+\end{Sinput}
+\begin{Soutput}
+[1] 19.97206
+\end{Soutput}
+\end{Schunk}
 
 Note that this is close to the actual mean wage, but not the same. Note also that each time we take a different random sample, we get a different mean wage in that sample. 
 
   Now let's implement the \emph{stratified sampling} scheme.
 
-<<>>=
-# Stratified sampling
-strat_samp <- bind_rows(
-  sample(filter(ds, staff == "women-ft"), 20), 
-  sample(filter(ds, staff == "women-pt"), 4), 
-  sample(filter(ds, staff == "men-ft"), 2), 
-  sample(filter(ds, staff == "men-pt"), 14)
-)
-mean(~wage, data = strat_samp)
-@
+\begin{Schunk}
+\begin{Sinput}
+> # Stratified sampling
+> strat_samp <- bind_rows(
++   sample(filter(ds, staff == "women-ft"), 20), 
++   sample(filter(ds, staff == "women-pt"), 4), 
++   sample(filter(ds, staff == "men-ft"), 2), 
++   sample(filter(ds, staff == "men-pt"), 14)
++ )
+> mean(~wage, data = strat_samp)
+\end{Sinput}
+\begin{Soutput}
+[1] 20.36083
+\end{Soutput}
+\end{Schunk}
 
   Again, the stratified sample mean is close to the actual value, but not the same. It will also differ each time we take a different random sample. So why might we prefer stratified sampling over simple random sampling?
   
   Let's compare the \emph{distribution} of sample means if we do this many, many times!
 
-<<fig.height=5, fig.width=10, fig.align='center'>>=
-# Comparison
-SRS <- do(1000) * mean(~wage, data = sample(ds, 40))
-STR <- do(1000) * mean(~wage, data = bind_rows(
-                                sample(filter(ds, staff == "women-ft"), 20),
-                                sample(filter(ds, staff == "women-pt"), 4),
-                                sample(filter(ds, staff == "men-ft"), 2),
-                                sample(filter(ds, staff == "men-pt"), 14)
-))
-sim <- bind_rows(SRS, STR) %>%
-  mutate(scheme = rep(c("simple", "statified"), each = 1000))
-qplot(data = sim, x = mean, color = scheme, geom = "density")
-@
+\begin{Schunk}
+\begin{Sinput}
+> # Comparison
+> SRS <- do(1000) * mean(~wage, data = sample(ds, 40))
+> STR <- do(1000) * mean(~wage, data = bind_rows(
++                                 sample(filter(ds, staff == "women-ft"), 20),
++                                 sample(filter(ds, staff == "women-pt"), 4),
++                                 sample(filter(ds, staff == "men-ft"), 2),
++                                 sample(filter(ds, staff == "men-pt"), 14)
++ ))
+> sim <- bind_rows(SRS, STR) %>%
++   mutate(scheme = rep(c("simple", "statified"), each = 1000))
+> qplot(data = sim, x = mean, color = scheme, geom = "density")
+\end{Sinput}
+\end{Schunk}
 
 
 \paragraph{Experimental Design}
