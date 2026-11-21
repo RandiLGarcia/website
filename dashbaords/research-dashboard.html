@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Undergraduate Research Conferences Dashboard</title>
+<style>
+  :root { --navy:#002855; --gold:#F2A900; --bg:#F4F6F9; --card:#FFF; --text:#1E293B; --muted:#64748B; --border:#E2E8F0; --blue:#2563EB; --green:#059669; --amber:#D97706; --purple:#7C3AED; --rose:#E11D48; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; background:var(--bg); color:var(--text); line-height:1.45; padding-bottom:50px; }
+  header { background:linear-gradient(135deg,var(--navy),#0f3d7a); color:#fff; padding:22px 18px; border-bottom:4px solid var(--gold); position:sticky; top:0; z-index:100; box-shadow:0 4px 10px rgba(0,0,0,0.12); }
+  .container { max-width:1340px; margin:0 auto; padding:0 14px; }
+  header h1 { font-size:1.5rem; margin-bottom:4px; }
+  header p { color:#CBD5E1; font-size:0.9rem; }
+  .nav-tabs { display:flex; gap:8px; margin-top:14px; flex-wrap:wrap; }
+  .tab-btn { background:rgba(255,255,255,0.15); color:#fff; border:1px solid rgba(255,255,255,0.3); padding:8px 14px; border-radius:7px; cursor:pointer; font-weight:600; font-size:0.86rem; }
+  .tab-btn.active, .tab-btn:hover { background:var(--gold); color:var(--navy); border-color:var(--gold); }
+  .kpi-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px; margin-top:18px; }
+  .kpi-card { background:var(--card); border-radius:10px; padding:15px; border:1px solid var(--border); }
+  .kpi-label { font-size:0.75rem; text-transform:uppercase; color:var(--muted); font-weight:700; }
+  .kpi-value { font-size:1.7rem; font-weight:800; color:var(--navy); margin:3px 0; }
+  .kpi-sub { font-size:0.8rem; color:var(--muted); }
+  .section-card { background:var(--card); border-radius:11px; padding:20px; margin-top:18px; border:1px solid var(--border); scroll-margin-top:155px; }
+  .section-title { font-size:1.18rem; font-weight:700; color:var(--navy); margin-bottom:14px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; }
+  .controls { display:flex; flex-wrap:wrap; gap:12px; align-items:center; background:#F8FAFC; padding:13px; border-radius:9px; border:1px solid var(--border); margin-bottom:16px; }
+  .select-dd { flex:1; min-width:240px; max-width:400px; padding:9px 12px; font-size:0.95rem; border-radius:7px; border:2px solid #CBD5E1; font-weight:600; cursor:pointer; }
+  .pills { display:flex; gap:6px; flex-wrap:wrap; }
+  .pill { background:#fff; border:1px solid #CBD5E1; border-radius:16px; padding:5px 10px; font-size:0.76rem; font-weight:600; cursor:pointer; }
+  .pill:hover, .pill.active { background:var(--navy); color:#fff; border-color:var(--navy); }
+  .spot-head { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:flex-start; gap:12px; padding-bottom:14px; border-bottom:1px solid var(--border); margin-bottom:14px; }
+  .spot-head h2 { font-size:1.45rem; color:var(--navy); }
+  .spot-head h3 { font-size:1.02rem; color:var(--blue); margin-top:2px; }
+  .badges { display:flex; gap:6px; flex-wrap:wrap; margin-top:6px; }
+  .badge { display:inline-block; padding:3px 9px; border-radius:99px; font-size:0.72rem; font-weight:700; text-transform:uppercase; }
+  .b-five { background:#DBEAFE; color:#1E40AF; }
+  .b-seven { background:#FCE7F3; color:#9D174D; }
+  .b-peer { background:#F1F5F9; color:#475569; }
+  .b-yes { background:#D1FAE5; color:#065F46; }
+  .b-no { background:#FEE2E2; color:#991B1B; }
+  .btn-link { background:var(--navy); color:#fff; text-decoration:none; padding:9px 14px; border-radius:7px; font-weight:600; font-size:0.84rem; display:inline-block; }
+  .spot-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:12px; }
+  .d-box { background:#F8FAFC; border:1px solid var(--border); border-radius:9px; padding:13px; }
+  .d-box h4 { font-size:0.75rem; text-transform:uppercase; color:var(--muted); margin-bottom:5px; }
+  .d-box p { font-size:0.9rem; }
+  .charts-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:14px; }
+  .c-box { background:#F8FAFC; border:1px solid var(--border); border-radius:9px; padding:14px; }
+  .c-box h3 { font-size:0.94rem; color:var(--navy); margin-bottom:10px; }
+  .b-row { margin-bottom:9px; }
+  .b-lbl { display:flex; justify-content:space-between; font-size:0.8rem; font-weight:600; margin-bottom:3px; }
+  .b-trk { width:100%; height:9px; background:#E2E8F0; border-radius:99px; overflow:hidden; }
+  .b-fil { height:100%; border-radius:99px; }
+  .t-ctrls { display:flex; flex-wrap:wrap; gap:10px; justify-content:space-between; margin-bottom:12px; }
+  .f-btns { display:flex; flex-wrap:wrap; gap:6px; }
+  .f-btn { background:#F1F5F9; border:1px solid #CBD5E1; padding:6px 11px; border-radius:7px; font-size:0.8rem; font-weight:600; cursor:pointer; }
+  .f-btn.active, .f-btn:hover { background:var(--navy); color:#fff; border-color:var(--navy); }
+  .s-inp { padding:7px 12px; border:1px solid #CBD5E1; border-radius:7px; min-width:230px; font-size:0.85rem; }
+  .t-wrap { overflow-x:auto; border:1px solid var(--border); border-radius:9px; }
+  table { width:100%; border-collapse:collapse; font-size:0.82rem; text-align:left; }
+  thead { background:var(--navy); color:#fff; }
+  th, td { padding:10px; border-bottom:1px solid var(--border); vertical-align:top; }
+  tbody tr:hover { background:#F1F5F9; }
+  .i-lnk { font-weight:700; color:var(--navy); cursor:pointer; text-decoration:underline; }
+  .e-lnk { color:var(--blue); text-decoration:none; font-weight:600; display:block; margin-top:3px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <h1>Undergraduate Research Conferences Dashboard</h1>
+    <p>Collaborations Working Group peer benchmarking</p>
+    <div class="nav-tabs">
+      <button class="tab-btn active" onclick="jumpTo('sec-spot', this)">1. Institution Spotlight (Dropdown)</button>
+      <button class="tab-btn" onclick="jumpTo('sec-over', this)">2. Data Overviews & Summaries</button>
+      <button class="tab-btn" onclick="jumpTo('sec-table', this)">3. Full Comparison Spreadsheet</button>
+    </div>
+  </div>
+</header>
+
+<main class="container">
+  <div class="kpi-grid">
+    <div class="kpi-card"><div class="kpi-label">Total Institutions</div><div class="kpi-value">17</div><div class="kpi-sub">5 Five Colleges • 7 Seven Sisters • 7 Peers</div></div>
+    <div class="kpi-card"><div class="kpi-label">All-Campus Spring Symposia</div><div class="kpi-value">11 / 17</div><div class="kpi-sub">65% hold a unified spring conference</div></div>
+    <div class="kpi-card"><div class="kpi-label">Cancel Classes / Reading Day</div><div class="kpi-value">9 / 17</div><div class="kpi-sub">82% of unified liberal arts conferences</div></div>
+    <div class="kpi-card"><div class="kpi-label">All 4 Class Years Present</div><div class="kpi-value">8 / 17</div><div class="kpi-sub">First-Years through Seniors eligible</div></div>
+    <div class="kpi-card"><div class="kpi-label">Arts Extensively Involved</div><div class="kpi-value">11 / 17</div><div class="kpi-sub">Visual, performing & literary arts</div></div>
+  </div>
+
+  <!-- SECTION 1: SPOTLIGHT -->
+  <section class="section-card" id="sec-spot">
+    <div class="section-title">
+      <span>1. Institution Spotlight Explorer</span>
+      <span style="font-size:0.82rem;color:var(--muted);">Select from dropdown or click any school in the table</span>
+    </div>
+    <div class="controls">
+      <label for="dd-school" style="font-weight:700;color:var(--navy);">Choose Institution:</label>
+      <select id="dd-school" class="select-dd" onchange="showSchool(this.value)"></select>
+      <div class="pills" id="pill-box"></div>
+    </div>
+    <div id="spot-box"></div>
+  </section>
+
+  <!-- SECTION 2: OVERVIEWS -->
+  <section class="section-card" id="sec-over">
+    <div class="section-title"><span>2. Cross-Institutional Overviews & Summaries</span></div>
+    <div class="charts-grid">
+      <div class="c-box">
+        <h3>Structural Format Models (17 Schools)</h3>
+        <div class="b-row"><div class="b-lbl"><span>Interdisciplinary All-Campus Conference</span><span>11 (65%)</span></div><div class="b-trk"><div class="b-fil" style="width:65%;background:var(--blue)"></div></div></div>
+        <div class="b-row"><div class="b-lbl"><span>Divisional / Seasonal (Fall STEM + Spring Theses)</span><span>6 (35%)</span></div><div class="b-trk"><div class="b-fil" style="width:35%;background:var(--purple)"></div></div></div>
+        <p style="font-size:0.8rem;color:var(--muted);margin-top:8px;"><strong>Takeaway:</strong> Smith, Wellesley, Mount Holyoke, Hampshire, UMass, Bates, Colby, Middlebury, Hamilton, Oberlin, and Skidmore hold unified spring events. Amherst, Williams, Vassar, Bryn Mawr, Barnard, and Harvard/Radcliffe split fall STEM posters from spring department colloquia.</p>
+      </div>
+      <div class="c-box">
+        <h3>Class Cancellation Policies</h3>
+        <div class="b-row"><div class="b-lbl"><span>Yes — Dedicated No-Class Weekday / Half-Day</span><span>6 (35%)</span></div><div class="b-trk"><div class="b-fil" style="width:35%;background:var(--green)"></div></div></div>
+        <div class="b-row"><div class="b-lbl"><span>Yes — Placed on Reading / Study Day</span><span>3 (18%)</span></div><div class="b-trk"><div class="b-fil" style="width:18%;background:#10B981"></div></div></div>
+        <div class="b-row"><div class="b-lbl"><span>No — Fri/Sat, Common Hours, or Dept Schedule</span><span>8 (47%)</span></div><div class="b-trk"><div class="b-fil" style="width:47%;background:var(--amber)"></div></div></div>
+        <p style="font-size:0.8rem;color:var(--muted);margin-top:8px;"><strong>Takeaway:</strong> 9 of 10 liberal arts peers holding a unified conference cancel weekday classes or use Reading Day. Smith is unique in holding <em>Celebrating Collaborations</em> on Fri/Sat without canceling classes.</p>
+      </div>
+      <div class="c-box">
+        <h3>Participating Class Years & Arts</h3>
+        <div class="b-row"><div class="b-lbl"><span>Open to All Class Years (First-Years – Seniors)</span><span>8 (47%)</span></div><div class="b-trk"><div class="b-fil" style="width:47%;background:var(--navy)"></div></div></div>
+        <div class="b-row"><div class="b-lbl"><span>Split by Season (Underclass Fall / Seniors Spring)</span><span>5 (29%)</span></div><div class="b-trk"><div class="b-fil" style="width:29%;background:var(--blue)"></div></div></div>
+        <div class="b-row"><div class="b-lbl"><span>Primarily or Exclusively Seniors</span><span>4 (24%)</span></div><div class="b-trk"><div class="b-fil" style="width:24%;background:var(--rose)"></div></div></div>
+        <p style="font-size:0.8rem;color:var(--muted);margin-top:8px;"><strong>Takeaway:</strong> 100% of all-campus conferences integrate the arts (exhibits, lecture-recitals, readings). Smith's STRIDE & AEMES programs give it unusually strong 1st- and 2nd-year participation.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 3: TABLE -->
+  <section class="section-card" id="sec-table">
+    <div class="section-title">
+      <span>3. Interactive Comparison Spreadsheet</span>
+      <span id="tbl-count" style="font-size:0.84rem;color:var(--muted);">Showing 17 of 17</span>
+    </div>
+    <div class="t-ctrls">
+      <div class="f-btns">
+        <button class="f-btn active" onclick="filterTbl('ALL',this)">All (17)</button>
+        <button class="f-btn" onclick="filterTbl('FIVE',this)">Five Colleges (5)</button>
+        <button class="f-btn" onclick="filterTbl('SEVEN',this)">Seven Sisters (7)</button>
+        <button class="f-btn" onclick="filterTbl('CANCEL',this)">Classes Cancelled: Yes (9)</button>
+        <button class="f-btn" onclick="filterTbl('ALLYEARS',this)">All Class Years (8)</button>
+      </div>
+      <input type="text" id="q-search" class="s-inp" placeholder="Search school, event, format, arts..." oninput="drawTable()">
+    </div>
+    <div class="t-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Institution</th><th>Five Coll?</th><th>Seven Sis?</th><th>Event Name & Website</th><th>Class Years</th><th>Format Model</th><th>Duration</th><th>Classes Cancelled?</th><th>Arts Involvement</th>
+          </tr>
+        </thead>
+        <tbody id="t-body"></tbody>
+      </table>
+    </div>
+  </section>
+</main>
+<!-- PASTE PART 2 DIRECTLY BELOW THIS LINE -->
+<script>
+const SCHOOLS = [
+  {n:"Smith College",fc:true,ss:true,ev:"Celebrating Collaborations",url:"https://www.smith.edu/news-events/events/spring-showcases/collaborations",ay:true,ov:"Held every spring in mid-to-late April near the conclusion of the spring semester, Smith College’s Celebrating Collaborations: Students and Faculty Working Together is an all-campus symposium showcasing student-faculty research across STEM, the humanities, social sciences, and the arts. Unlike most peer liberal arts colleges that cancel weekday classes for their conference, <strong>Smith does not cancel classes; instead, the 1-to-1.5-day conference is scheduled across Friday afternoon (when fewer courses meet) and Saturday to avoid instructional conflicts.</strong> Supported by Smith's signature early-career research programs (STRIDE, AEMES, and Praxis), first-years and sophomores present posters and oral talks alongside junior and senior thesis writers at unusually high rates.",yr:"All Class Years (First-Years – Seniors): Honors, special studies, STRIDE, AEMES, Praxis, & capstones.",fmt:"Interdisciplinary All-Campus: Concurrent oral panels, large poster sessions, & thematic roundtables.",dur:"1–1.5 Days (Spring; mid/late April, Friday afternoon & Saturday blocks).",cb:false,can:"No: Held Friday afternoon & Saturday so classes are not canceled.",art:"Moderate–Extensive: Art history/SCMA talks, creative writing, performing arts scholarship, & architecture."},
+  {n:"Mount Holyoke College",fc:true,ss:true,ev:"Senior Symposium",url:"https://www.mtholyoke.edu/academics/centers-and-facilities/weissman-center-leadership",ay:false,ov:"Organized each spring in late April or early May by the Weissman Center for Leadership, Mount Holyoke’s Senior Symposium takes place on the first official Reading Day immediately after spring classes conclude and before final exams begin. <strong>Because it is anchored on a non-instructional Reading Day, no classes are in session for the entire 1-day event,</strong> allowing the whole campus community to attend concurrent 15-minute oral panels and centralized poster halls without scheduling conflicts. While primarily a capstone showcase for graduating seniors presenting honors theses, 395-level independent research, and LEAP internship reflections, underclassmen frequently co-present on collaborative STEM lab posters.",yr:"Primarily Seniors (Underclassmen co-present on group/lab STEM posters).",fmt:"Interdisciplinary All-Campus: Concurrent 15-min faculty-moderated oral panels & centralized poster sessions.",dur:"1 Full Day (Spring; late April/early May).",cb:true,can:"Yes — Reading Day: Held on the first reading day after classes end.",art:"Extensive: Performing arts showcases, studio art thesis talks, film screenings, & literary readings."},
+  {n:"Amherst College",fc:true,ss:false,ev:"Fall STEM Summer-Research Poster Session (SURF) & Spring Dept Thesis Colloquia",url:"https://www.amherst.edu/academiclife/student-faculty-research/surf-program",lbl1:"Official SURF Program Website",url2:"https://www.amherststemnetwork.com/2025/10/20/big-ideas-poster-sized-inside-the-2025-stem-summer-research-poster-session/",lbl2:"Inside the STEM Poster Session",ay:false,ov:"Unlike its Five College neighbors, <strong>Amherst College does not hold a single unified all-campus spring research conference and does not cancel classes for a college-wide symposium.</strong> Instead, undergraduate research presentations are divided across the academic year: in early fall (September/October), rising sophomores, juniors, and seniors in the SURF program present at a <strong>1-day centralized STEM Summer Research Poster Session on a Friday afternoon while classes remain in session.</strong> Later, during the final week of spring classes and the May Reading Period, graduating seniors present honors theses and creative capstones within their individual academic departments over multiple days.",yr:"Split by Season: Fall SURF Poster Session (Soph–Sr summer STEM fellows); Spring Departmental Thesis Colloquia (Seniors Only).",fmt:"Divisional / Decentralized: No single all-campus spring conference. Hosts a centralized Fall SURF STEM Poster Session in the Science Center, while spring thesis presentations happen inside individual academic departments.",dur:"1 Day (Fall SURF Poster Session) / Multi-Day by Department (Spring).",cb:false,can:"No: Classes run normally; departmental colloquia use common hours or reading period.",art:"Decentralized: Senior studio art shows at the Mead Art Museum/Eli Marsh Gallery, theater capstones, & music concerts occur as standalone department events."},
+  {n:"Hampshire College",fc:true,ss:false,ev:"Division III Showcase & Presentations",url:"https://www.hampshire.edu/academics/academic-program",ay:false,ov:"At Hampshire College, every graduating senior must complete and publicly defend a year-long independent research or creative project known as Division III. Taking place at the end of the spring semester in late April and early May leading up to Commencement, <strong>regular seminar classes wind down for designated Division III Presentation Days (spanning 1 to 2 weeks of multi-day showcases) so that no standard coursework conflicts with the presentations.</strong> Throughout this period, the entire campus turns into an interdisciplinary festival of oral panels, scientific presentations, gallery installations, film screenings, and original theatrical and musical productions.",yr:"Seniors (Division III students; Div II underclassmen assist & attend).",fmt:"Interdisciplinary All-Campus: Oral talks, installations, & panels across learning collaboratives.",dur:"Multi-Day / 1–2 Weeks (Spring; late April/early May).",cb:true,can:"Yes — Designated Div III Presentation Days at the end of the semester.",art:"Extensive: Film screenings, gallery shows, original theater/dance works, concerts, & creative writing."},
+  {n:"UMass Amherst",fc:true,ss:false,ev:"Mass. Undergraduate Research Conference (MassURC)",url:"https://www.umass.edu/honors/curriculum/opportunities/MassURC",ay:true,ov:"Hosted every spring on a Friday in mid-to-late April by the Commonwealth Honors College at UMass Amherst, MassURC is a massive 1-day conference bringing together over 1,000 undergraduates from UMass, public universities, and the Five College Consortium. Because UMass is a 30,000-student research university, <strong>campus-wide Friday classes are not canceled for this 1-full-day event; however, presenting students receive official excused class absences</strong> and many faculty bring their classes to the Campus Center poster halls and oral panels. Students from all four class years present research across more than 60 disciplines, ranging from STEM and public policy to architecture and fine arts.",yr:"All Class Years (First-Years – Seniors across UMass & Five Colleges).",fmt:"Interdisciplinary All-Campus Mega-Conference: Massive poster halls & dozens of concurrent oral panels.",dur:"1 Full Day (Spring; Friday in late April).",cb:false,can:"No: Classes remain in session across the university (excused absences for presenters).",art:"Moderate–Extensive: Visual art, art history, musicology, architecture/design, & creative writing panels."},
+  {n:"Wellesley College",fc:false,ss:true,ev:"The Ruhlman Conference",url:"https://www1.wellesley.edu/biology/research/conferences",ay:true,ov:"Held every spring on a dedicated Wednesday in late April or early May, Wellesley’s Ruhlman Conference is a signature all-campus tradition built directly into the academic calendar as a non-instructional day. <strong>All Wednesday classes are canceled across the college for 1 full day (from 8:30 AM to 5:00 PM)</strong> so that faculty and students can participate as presenters, moderators, and audience members. Open by application to all four class years, Ruhlman intentionally groups students from different majors into cross-disciplinary thematic oral panels alongside massive STEM poster halls, poetry readings, Davis Museum curatorial talks, and performing arts lecture-recitals.",yr:"All Class Years (First-Years – Seniors): Open by application across all majors.",fmt:"Interdisciplinary All-Campus: 15-min cross-departmental thematic panels, poster halls, & roundtables.",dur:"1 Full Day (Spring; Wednesday in late April/early May, 8:30 AM–5:00 PM).",cb:true,can:"Yes — Dedicated Calendar Day: Non-instructional weekday built into the academic calendar.",art:"Extensive: Music/theater/dance lecture-recitals, studio art gallery walks, poetry readings, & Davis Museum talks."},
+  {n:"Bryn Mawr College",fc:false,ss:true,ev:"Summer Science Symposium & Spring Praxis/Thesis Days",url:"https://www.brynmawr.edu/inside/latest/events/2022-summer-science-research-symposium",lbl1:"Summer Science Research Symposium",url2:"https://www.brynmawr.edu/inside/offices-services/career-civic-engagement-center/experiential-learning/academic-connections-praxis/upcoming-praxis-course-offerings",lbl2:"Praxis Program & Presentations",ay:false,ov:"Bryn Mawr divides its undergraduate research showcases across the fall and spring semesters rather than canceling classes for a single all-campus conference. In early fall (September), rising sophomores, juniors, and seniors in the Summer Science Research (SSR) program present at a <strong>1-day STEM Poster Symposium held during open Friday hours while classes remain in session.</strong> At the end of the fall and spring semesters (December and late April/early May), <strong>1-day community-engaged Praxis fieldwork showcases and senior thesis colloquia are hosted during afternoon common blocks and Reading Days without canceling the college-wide class schedule.</strong>",yr:"Split by Program: Fall STEM & Spring Praxis (Soph–Sr); Spring Thesis Days (Seniors Only).",fmt:"Divisional / Seasonal: Fall STEM poster hall; separate spring Praxis fieldwork & department thesis days.",dur:"1 Day per Showcase (Fall & late Spring).",cb:false,can:"No: Held during common hours, Friday afternoons, or reading days.",art:"Moderate / Decentralized: Bi-Co visual/performing arts exhibitions & readings hosted by departments."},
+  {n:"Vassar College",fc:false,ss:true,ev:"URSI Symposium (Fall) & Senior Capstones (Spring)",url:"https://www.vassar.edu/ursi",ay:false,ov:"<strong>Vassar operates on a seasonal showcase model and does not cancel weekday classes for a single spring research conference.</strong> In early fall (September/October), rising sophomores, juniors, and seniors who completed funded summer laboratory and field research present at the annual <strong>1-day Undergraduate Research Summer Institute (URSI) Symposium on a Wednesday or Friday afternoon while classes run normally.</strong> Later in the academic year—during late April, early May, and the winter Modfest arts festival—graduating seniors present honors theses, capstones, and creative works over <strong>1 to 2 weeks within individual academic departments</strong> during open afternoon blocks and the spring study period.",yr:"Split by Season: Fall URSI (Soph–Sr); Spring colloquia (Seniors Only).",fmt:"Divisional / Seasonal: Fall STEM poster symposium; decentralized spring departmental thesis colloquia.",dur:"1 Day (Fall) / 1–2 Weeks (Spring by department).",cb:false,can:"No: Scheduled around standard class blocks & reading period.",art:"Moderate / Decentralized: Standalone winter Modfest, Loeb Art Center exhibits, & drama thesis weekends."},
+  {n:"Barnard College",fc:false,ss:true,ev:"Summer Research Institute (SRI) Posters & Senior Showcases",url:"https://barnard.edu/summer-research-institute",ay:false,ov:"Because Barnard shares its academic calendar and cross-registration schedule with Columbia University, <strong>classes are never canceled for a college-wide research day.</strong> Instead, Barnard’s largest interdisciplinary showcase—the <strong>1-day Summer Research Institute (SRI) Poster Session,</strong> featuring over 250 sophomores, juniors, and seniors across STEM, arts, and humanities—is held as a centralized event outside standard lecture conflicts. Then, <strong>across 1 to 2 weeks in late April and early May</strong> at the end of the spring semester, every graduating senior presents their required Senior Thesis or Capstone at department-specific symposia, gallery exhibitions, and theater festivals scheduled during colloquium hours and reading days.",yr:"Split by Program: SRI Posters (Soph–Sr, 250+ fellows); Spring Colloquia (Seniors Only).",fmt:"Divisional / Programmatic: Large SRI poster session; spring department-by-department senior symposia.",dur:"1 Day (SRI) / 1–2 Weeks (Spring).",cb:false,can:"No: Classes remain in session; uses colloquium hours & reading days.",art:"Moderate / Decentralized: Arts/humanities included in SRI; Movement Lab, Theatre & Visual Arts hold spring shows."},
+  {n:"Radcliffe (Harvard College / Radcliffe Inst.)",fc:false,ss:true,ev:"Harvard Research Village & Thesis Symposia",url:"https://uraf.harvard.edu/",ay:true,ov:"Following Radcliffe’s merger with Harvard, <strong>undergraduate research showcases are organized through the Office of Undergraduate Research and Fellowships (URAF) and the Harvard Undergraduate Research Association without canceling university classes.</strong> Showcases occur at three points in the academic year: a <strong>3-day National Collegiate Research Conference (NCRC) over a January weekend, a 1-day all-class-year Spring Research Village poster fair during late April, and multi-day senior honors thesis colloquia</strong> hosted by individual academic concentrations during the May Reading Period after spring lectures conclude.",yr:"All Class Years (Research Village/NCRC) & Seniors (Concentration Colloquia).",fmt:"Divisional / Hybrid: HURA Spring Research Village posters, Jan NCRC, & departmental thesis defenses.",dur:"1–3 Days (Jan NCRC & late April/May Reading Period).",cb:false,can:"No: Held on weekends, common hours, or May Reading Period.",art:"Moderate / Decentralized: ARTS FIRST festival & AFVS senior studio exhibitions run as standalone events."},
+  {n:"Bates College",fc:false,ss:false,ev:"Mount David Summit",url:"https://www.bates.edu/summit/",ay:true,ov:"Held every spring on a Friday near the end of the Winter/Spring semester (typically late March or early April), Bates College’s Mount David Summit is a signature campus-wide celebration of student scholarship. <strong>To ensure the entire campus attends this half-to-full-day event, Bates cancels all Friday afternoon classes starting at noon,</strong> allowing hundreds of students, faculty, and guests to pack Pettengill Hall for a 4-to-5-hour afternoon block of concurrent poster sessions, oral panels, film screenings, studio art installations, and evening dance and music performances. Students from all four class years participate, ranging from first-year course projects to senior honors theses.",yr:"All Class Years (First-Years – Seniors): Senior theses, summer fellows, & course projects.",fmt:"Interdisciplinary All-Campus: Concurrent poster halls, thematic talks, & community research panels.",dur:"1 Half-to-Full Day (Spring; Friday afternoon into evening).",cb:true,can:"Yes — Half-Day Cancellation: All Friday afternoon classes canceled campus-wide.",art:"Extensive: Documentary films, photography/studio art installations, live theater scenes, dance, & music recitals."}
+  ,
+  {n:"Colby College",fc:false,ss:false,ev:"Colby Liberal Arts Symposium (CLAS)",url:"https://www.colby.edu/academics/research/colby-liberal-arts-symposium/",ay:true,ov:"Taking place every spring on a dedicated Thursday in late April or early May during the final weeks of the spring semester, the Colby Liberal Arts Symposium (CLAS) is widely considered one of the largest undergraduate research symposia at any liberal arts college in the nation. <strong>All Thursday classes are canceled campus-wide for this 1.5-day event (kicking off Wednesday evening followed by a full Thursday of sessions)</strong> so that students from all four class years and faculty across every department can participate. The conference features hundreds of concurrent oral presentations, a massive poster hall in the athletic center, poetry readings, theater and music performances, and Colby Museum of Art talks.",yr:"All Class Years (First-Years – Seniors): Senior Scholars, JanPlan projects, & lab posters.",fmt:"Interdisciplinary All-Campus: Hundreds of oral panels, athletic center poster hall, & lightning talks.",dur:"1.5 Days (Spring; Wed evening art opening/keynote + full Thursday).",cb:true,can:"Yes — Dedicated Calendar Day: All Thursday classes canceled campus-wide.",art:"Extensive: Poetry/fiction readings, theater & music performances, studio art walks, & Colby Museum talks."},
+  {n:"Middlebury College",fc:false,ss:false,ev:"Spring Student Symposium",url:"https://www.middlebury.edu/teaching-learning-research/spring-student-symposium",ay:true,ov:"Middlebury’s Spring Student Symposium is held every year in mid-to-late April on a designated Friday. <strong>Built into the spring academic calendar as a non-instructional conference day, all Friday classes are canceled across the college for the 1.5-day event (Thursday evening performances followed by a full Friday from 9:00 AM to 4:00 PM).</strong> The symposium brings together students from all four class years across McCardell Bicentennial Hall and neighboring arts venues for concurrent interdisciplinary oral panels, massive STEM and social science poster sessions, original dance choreography, studio art exhibitions, and musical recitals.",yr:"All Class Years (First-Years – Seniors; heavily Juniors & Seniors).",fmt:"Interdisciplinary All-Campus: Thematic oral blocks, digital humanities showcases, & massive poster halls.",dur:"1.5 Days (Spring; Thursday evening performances + full Friday).",cb:true,can:"Yes — Dedicated Calendar Day: All Friday classes canceled campus-wide.",art:"Extensive: Original dance choreography, concerts, studio art exhibitions, creative writing, & architectural models."},
+  {n:"Hamilton College",fc:false,ss:false,ev:"Student Research & Senior Program Symposia",url:"https://www.hamilton.edu/academics/student-research",ay:false,ov:"Held near the conclusion of the spring semester in early May, Hamilton College celebrates undergraduate research and its required Senior Program through dedicated campus-wide symposium days (including Tolles-Horowitz Day). <strong>Weekday classes are canceled across the college for 1 full day,</strong> freeing the entire campus community to attend concurrent departmental and interdisciplinary oral panels, sophomore and junior summer research poster sessions, senior studio art exhibition openings at the Wellin Museum of Art, film screenings, and live musical performances.",yr:"Primarily Seniors (Senior Program capstones, plus Soph/Jr summer fellows).",fmt:"Interdisciplinary All-Campus: Concurrent oral panels, poster sessions, & public affairs forums.",dur:"1 Full Day (Spring; early May).",cb:true,can:"Yes — Dedicated Calendar Day: Classes canceled for the day.",art:"Extensive: Wellin Museum senior art openings, musical performances, film screenings, & literary readings."},
+  {n:"Oberlin College",fc:false,ss:false,ev:"Senior Symposium",url:"https://www.oberlin.edu/undergraduate-research",ay:false,ov:"Scheduled each spring in late April or early May on the designated Reading Day between the end of spring classes and the start of final exams, <strong>Oberlin’s Senior Symposium runs for 1 full day when no classes are in session.</strong> Exclusively showcasing graduating fourth- and fifth-year seniors from both the College of Arts & Sciences and the Oberlin Conservatory of Music, the symposium avoids all course conflicts and features concurrent empirical research panels, poster sessions, visual art discussions, and unique Conservatory 'lecture-recitals' that combine live musical performance with historical or theoretical scholarship.",yr:"Seniors Only (4th- and 5th-year College & Conservatory seniors).",fmt:"Interdisciplinary All-Campus: Oral panels, lightning talks, & posters bridging Arts & Sciences and Conservatory.",dur:"1 Full Day (Spring; late April/early May).",cb:true,can:"Yes — Reading Day: Held during reading period before final exams.",art:"Extensive: Conservatory lecture-recitals combining live music performance with research, plus visual art talks."},
+  {n:"Skidmore College",fc:false,ss:false,ev:"Academic Festival",url:"https://www.skidmore.edu/academic_festival/index.php",ay:true,ov:"Held every spring in early May on a designated Study Day immediately after classes end and prior to final exams, <strong>Skidmore’s Academic Festival runs for 1 full day (from 9:00 AM to 5:00 PM) with no classes in session anywhere on campus.</strong> Placing the conference on a conflict-free Study Day enables high campus-wide turnout for presentations by students of all class years (heavily seniors and juniors). Reflecting Skidmore’s motto 'Creative Thought Matters,' the festival seamlessly weaves Tang Teaching Museum gallery talks, original theater and dance choreography, musical compositions, and documentary films into the same schedule as STEM posters and humanities panels.",yr:"All Class Years (Heavily Seniors & Juniors, open to underclassmen).",fmt:"Interdisciplinary All-Campus: Panels, posters, & capstone roundtables across all disciplines.",dur:"1 Full Day (Spring; early May, 9:00 AM–5:00 PM).",cb:true,can:"Yes — Study Day: Held on designated study day before final exams.",art:"Extensive: Tang Museum gallery talks, original theater/dance choreography, concerts, & documentary films."},
+  {n:"Williams College",fc:false,ss:false,ev:"No All-Campus Spring Conference (Fall Summer-Research Posters & Dept Thesis Colloquia)",url:"https://science.williams.edu/",ay:false,ov:"Like Amherst, <strong>Williams College does not hold a single unified all-campus spring research conference and does not cancel weekday classes for a college-wide symposium.</strong> Instead, undergraduate research is showcased seasonally: in early fall (September/October), roughly 200 rising sophomores, juniors, and seniors who participated in Williams' Summer Science Research program present at a <strong>1-day centralized Friday afternoon STEM Poster Session in the Science Center while regular classes remain in session.</strong> In the spring (early-to-mid May), graduating seniors present honors theses and artistic capstones over <strong>multiple days within individual academic departments</strong> during the final week of classes and the spring reading period.",yr:"Split by Season: Fall posters (Soph–Sr summer fellows); Spring colloquia (Seniors Only).",fmt:"Divisional / Decentralized: No single all-campus spring conference. Hosts a centralized fall STEM poster session in the Science Center, while spring senior theses are presented inside individual departments.",dur:"1 Day (Fall) / Multi-Day by Department (Spring across final week & reading period).",cb:false,can:"No: Scheduled around class blocks or during reading period.",art:"Decentralized: Senior studio shows at WCMA, theater capstones, & music recitals run separately."}
+];
+
+let curFilter = "ALL";
+
+function init() {
+  const dd = document.getElementById("dd-school");
+  const pb = document.getElementById("pill-box");
+  const quick = [
+    {label:"Smith", full:"Smith College"},
+    {label:"Mount Holyoke", full:"Mount Holyoke College"},
+    {label:"Amherst", full:"Amherst College"},
+    {label:"UMass Amherst", full:"UMass Amherst"},
+    {label:"Wellesley", full:"Wellesley College"},
+    {label:"Bryn Mawr", full:"Bryn Mawr College"},
+    {label:"Vassar", full:"Vassar College"},
+    {label:"Barnard", full:"Barnard College"},
+    {label:"Radcliffe", full:"Radcliffe (Harvard College / Radcliffe Inst.)"}
+  ];
+
+  SCHOOLS.forEach(s => {
+    const opt = document.createElement("option");
+    opt.value = s.n;
+    opt.textContent = s.n + " — " + s.ev;
+    dd.appendChild(opt);
+  });
+
+  quick.forEach(q => {
+    const b = document.createElement("button");
+    b.className = "pill";
+    b.dataset.school = q.full;
+    b.textContent = q.label;
+    b.onclick = () => showSchool(q.full);
+    pb.appendChild(b);
+  });
+
+  showSchool("Smith College");
+  drawTable();
+}
+
+function showSchool(name) {
+  const s = SCHOOLS.find(x => x.n === name) || SCHOOLS[0];
+  document.getElementById("dd-school").value = s.n;
+  document.querySelectorAll(".pill").forEach(p => {
+    p.classList.toggle("active", p.dataset.school === s.n);
+  });
+
+  const btnHtml = s.url2
+    ? `<div style="display:flex;gap:8px;flex-wrap:wrap;">
+         <a class="btn-link" href="${s.url}" target="_blank" rel="noopener">${s.lbl1 || 'Visit Official Event Website'} &rarr;</a>
+         <a class="btn-link" style="background:var(--blue);" href="${s.url2}" target="_blank" rel="noopener">${s.lbl2 || 'Second Website'} &rarr;</a>
+       </div>`
+    : `<a class="btn-link" href="${s.url}" target="_blank" rel="noopener">Visit Official Event Website &rarr;</a>`;
+
+  document.getElementById("spot-box").innerHTML = `
+    <div class="spot-head">
+      <div>
+        <h2>${s.n}</h2>
+        <h3>${s.ev}</h3>
+        <div class="badges">
+          ${s.fc ? '<span class="badge b-five">Five College Consortium</span>' : ''}
+          ${s.ss ? '<span class="badge b-seven">Seven Sisters</span>' : ''}
+          ${!s.fc && !s.ss ? '<span class="badge b-peer">National Liberal Arts Peer</span>' : ''}
+          <span class="badge ${s.cb ? 'b-yes' : 'b-no'}">Classes Cancelled: ${s.cb ? 'Yes' : 'No'}</span>
+          <span class="badge ${s.ay ? 'b-yes' : 'b-peer'}">${s.ay ? 'All 4 Class Years' : 'Senior / Split Focus'}</span>
+        </div>
+      </div>
+      ${btnHtml}
+    </div>
+    <div style="background:linear-gradient(to right, #EFF6FF, #F8FAFC); border-left:4px solid var(--navy); border-radius:8px; padding:14px 16px; margin-bottom:16px; color:var(--text); font-size:0.94rem; line-height:1.55;">
+      <div style="font-size:0.74rem; text-transform:uppercase; letter-spacing:0.05em; font-weight:700; color:var(--navy); margin-bottom:4px;">Institutional Overview (Timing & Class Cancellation Policy)</div>
+      ${s.ov}
+    </div>
+    <div class="spot-grid">
+      <div class="d-box"><h4>Participating Class Years (Level)</h4><p>${s.yr}</p></div>
+      <div class="d-box"><h4>Structural Model & Format</h4><p>${s.fmt}</p></div>
+      <div class="d-box"><h4>Duration & Timing</h4><p>${s.dur}</p></div>
+      <div class="d-box"><h4>Are Classes Cancelled?</h4><p>${s.can}</p></div>
+      <div class="d-box" style="grid-column: 1 / -1;"><h4>How the Arts Are Involved</h4><p>${s.art}</p></div>
+    </div>
+  `;
+}
+
+function filterTbl(mode, btn) {
+  curFilter = mode;
+  document.querySelectorAll(".f-btn").forEach(b => b.classList.remove("active"));
+  btn.classList.add("active");
+  drawTable();
+}
+
+function drawTable() {
+  const q = document.getElementById("q-search").value.toLowerCase();
+  const tb = document.getElementById("t-body");
+  tb.innerHTML = "";
+  let count = 0;
+
+  SCHOOLS.forEach(s => {
+    if (curFilter === "FIVE" && !s.fc) return;
+    if (curFilter === "SEVEN" && !s.ss) return;
+    if (curFilter === "CANCEL" && !s.cb) return;
+    if (curFilter === "ALLYEARS" && !s.ay) return;
+    const blob = `${s.n} ${s.ev} ${s.ov} ${s.yr} ${s.fmt} ${s.dur} ${s.can} ${s.art}`.toLowerCase();
+    if (q && !blob.includes(q)) return;
+
+    count++;
+    const linksHtml = s.url2
+      ? `<a class="e-lnk" href="${s.url}" target="_blank" rel="noopener">${s.lbl1 || 'Official Website'} &rarr;</a>
+         <a class="e-lnk" href="${s.url2}" target="_blank" rel="noopener">${s.lbl2 || 'Second Website'} &rarr;</a>`
+      : `<a class="e-lnk" href="${s.url}" target="_blank" rel="noopener">Official Website &rarr;</a>`;
+
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td><span class="i-lnk" onclick="pickFromTable('${s.n.replace(/'/g,"\\'")}')">${s.n}</span></td>
+      <td><span class="badge ${s.fc?'b-five':'b-peer'}">${s.fc?'Yes':'No'}</span></td>
+      <td><span class="badge ${s.ss?'b-seven':'b-peer'}">${s.ss?'Yes':'No'}</span></td>
+      <td><strong>${s.ev}</strong>${linksHtml}</td>
+      <td>${s.yr}</td>
+      <td>${s.fmt}</td>
+      <td>${s.dur}</td>
+      <td><span class="badge ${s.cb?'b-yes':'b-no'}" style="margin-bottom:4px;">${s.cb?'Yes':'No'}</span><br>${s.can}</td>
+      <td>${s.art}</td>
+    `;
+    tb.appendChild(tr);
+  });
+
+  document.getElementById("tbl-count").textContent = `Showing ${count} of ${SCHOOLS.length} institutions`;
+}
+
+function pickFromTable(name) {
+  showSchool(name);
+  jumpTo("sec-spot", document.querySelectorAll(".tab-btn")[0]);
+}
+
+function jumpTo(id, btn) {
+  document.querySelectorAll(".tab-btn").forEach(b => b.classList.remove("active"));
+  if (btn) btn.classList.add("active");
+  document.getElementById(id).scrollIntoView({ behavior: "smooth" });
+}
+
+window.addEventListener("DOMContentLoaded", init);
+</script>
+</body>
+</html>
